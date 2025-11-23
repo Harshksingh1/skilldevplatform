@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}My Courses - Skills Development Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="display-5 fw-bold mb-4">
+        <i class="fas fa-book-reader me-2"></i>My Courses
+    </h1>
+    
+    {% if enrollments %}
+    <div class="row">
+        {% for enrollment in enrollments %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100 clickable-card" onclick="window.location='{{ enrollment.course.get_absolute_url }}'">
+                {% if enrollment.course.image %}
+                    <img src="{{ enrollment.course.image.url }}" class="card-img-top" alt="{{ enrollment.course.title }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <span class="badge bg-{{ enrollment.get_status_display|lower }} mb-2">{{ enrollment.get_status_display }}</span>
+                    <h5 class="card-title fw-bold">{{ enrollment.course.title }}</h5>
+                    <p class="text-muted small">{{ enrollment.course.description|truncatewords:20 }}</p>
+                    
+                    <div class="mb-3">
+                        <strong>Progress:</strong>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar" style="width: {{ enrollment.progress_percentage }}%">
+                                {{ enrollment.progress_percentage }}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            Enrolled: {{ enrollment.enrolled_date|date:"M d, Y" }}
+                        </small>
+                        <a href="{% url 'course_detail' enrollment.course.pk %}" class="btn btn-sm btn-primary">
+                            Continue <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">No enrollments yet</h4>
+        <p class="text-muted">Start your learning journey by enrolling in courses!</p>
+        <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-search me-2"></i>Browse Courses
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

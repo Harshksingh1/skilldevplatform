@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Skills Development Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-5 animate-fade-in">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 animate-slide-in-left">
+                <h1 class="display-4 fw-bold mb-4">Empower Your Workforce</h1>
+                <p class="lead mb-4">Transform your team's capabilities through comprehensive skill development and training programs. Build expertise, boost productivity, and drive success.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'course_list' %}" class="btn btn-light btn-lg animate-bounce-hover">
+                        <i class="fas fa-rocket me-2"></i>Explore Courses
+                    </a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-outline-light btn-lg animate-bounce-hover">
+                        <i class="fas fa-tools me-2"></i>Browse Skills
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center animate-slide-in-right">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600" alt="Team Learning" class="img-fluid rounded-3 shadow-lg animate-float">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4 animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div class="stat-card p-4 bg-white rounded shadow-sm">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h3 class="fw-bold">{{ workers_count|default:0 }}</h3>
+                    <p class="text-muted">Active Workers</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="stat-card p-4 bg-white rounded shadow-sm">
+                    <i class="fas fa-book fa-3x text-success mb-3"></i>
+                    <h3 class="fw-bold">{{ courses|length|add:"+" }}</h3>
+                    <p class="text-muted">Available Courses</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 animate-fade-in-up" style="animation-delay: 0.3s;">
+                <div class="stat-card p-4 bg-white rounded shadow-sm">
+                    <i class="fas fa-tools fa-3x text-info mb-3"></i>
+                    <h3 class="fw-bold">{{ skills|length|add:"+" }}</h3>
+                    <p class="text-muted">Skills to Master</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Skills Section -->
+<section class="skills-section py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center animate-fade-in-up">
+                <h2 class="fw-bold mb-3">Featured Skills</h2>
+                <p class="text-muted">Explore in-demand skills to advance your career</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for skill in skills %}
+            <div class="col-md-4 mb-4 animate-fade-in-up" style="animation-delay: {{ forloop.counter0|add:"0.1" }}s;">
+                <div class="card h-100 shadow-sm skill-card clickable-card" onclick="window.location='{{ skill.get_absolute_url }}'">
+                    {% if skill.image %}
+                        <img src="{{ skill.image.url }}" class="card-img-top" alt="{{ skill.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-gradient-primary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="{{ skill.category.icon|default:'fas fa-tag' }} fa-4x"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-{{ skill.get_difficulty_color }} mb-2">{{ skill.get_difficulty_level_display }}</span>
+                        <h5 class="card-title fw-bold">{{ skill.name }}</h5>
+                        <p class="card-text text-muted">{{ skill.description|truncatewords:20 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ skill.estimated_duration_hours }}h
+                            </small>
+                            <a href="{{ skill.get_absolute_url }}" class="btn btn-sm btn-primary">
+                                Learn More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No skills available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'skill_list' %}" class="btn btn-primary btn-lg">
+                View All Skills <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Courses Section -->
+<section class="courses-section py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center animate-fade-in-up">
+                <h2 class="fw-bold mb-3">Popular Courses</h2>
+                <p class="text-muted">Enroll in these trending courses to level up your skills</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for course in courses %}
+            <div class="col-md-6 col-lg-3 mb-4 animate-fade-in-up" style="animation-delay: {{ forloop.counter0|add:"0.1" }}s;">
+                <div class="card h-100 shadow-sm course-card clickable-card" onclick="window.location='{{ course.get_absolute_url }}'">
+                    {% if course.image %}
+                        <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 180px; object-fit: cover;">
+                    {% elif course.image_url %}
+                        <img src="{{ course.image_url }}" class="card-img-top" alt="{{ course.title }}" style="height: 180px; object-fit: cover;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800';">
+                    {% else %}
+                        <div class="card-img-top bg-gradient-info text-white d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="fas fa-book fa-3x"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-{{ course.get_difficulty_level_display|lower }} mb-2">{{ course.get_difficulty_level_display }}</span>
+                        <h6 class="card-title fw-bold">{{ course.title|truncatewords:5 }}</h6>
+                        <p class="card-text text-muted small">{{ course.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-users me-1"></i>{{ course.enrolled_count }}/{{ course.capacity }}
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ course.duration_hours }}h
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <a href="{{ course.get_absolute_url }}" class="btn btn-sm btn-primary w-100">
+                            View Course <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No courses available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg">
+                Browse All Courses <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5 bg-gradient-primary text-white">
+    <div class="container text-center animate-fade-in-up">
+        <h2 class="display-5 fw-bold mb-3">Ready to Start Learning?</h2>
+        <p class="lead mb-4">Join thousands of workers already improving their skills</p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+        {% else %}
+            <a href="{% url 'course_list' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-rocket me-2"></i>Explore Courses
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

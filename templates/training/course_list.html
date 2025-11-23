@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Skills Development Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold mb-3">
+                <i class="fas fa-book me-2"></i>Training Courses
+            </h1>
+            <p class="text-muted">Enroll in courses to develop your skills and advance your career</p>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control" placeholder="Search courses..." value="{{ search_query }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="difficulty" class="form-select">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if current_difficulty == "beginner" %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if current_difficulty == "intermediate" %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if current_difficulty == "advanced" %}selected{% endif %}>Advanced</option>
+                        <option value="expert" {% if current_difficulty == "expert" %}selected{% endif %}>Expert</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text"
+                           name="skill"
+                           class="form-control"
+                           placeholder="Skill name or ID"
+                           list="skill-filter-options"
+                           value="{{ current_skill }}">
+                    {% if available_skills %}
+                    <datalist id="skill-filter-options">
+                        {% for skill in available_skills %}
+                        <option value="{{ skill.name }}"></option>
+                        {% endfor %}
+                    </datalist>
+                    {% endif %}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-1"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Courses Grid -->
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm course-card clickable-card" onclick="window.location='{{ course.get_absolute_url }}'">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 180px; object-fit: cover;">
+                {% elif course.image_url %}
+                    <img src="{{ course.image_url }}" class="card-img-top" alt="{{ course.title }}" style="height: 180px; object-fit: cover;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800';">
+                {% else %}
+                    <div class="card-img-top bg-gradient-info text-white d-flex align-items-center justify-content-center" style="height: 180px;">
+                        <i class="fas fa-book fa-3x"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <span class="badge bg-info mb-2">{{ course.get_difficulty_level_display }}</span>
+                    <h6 class="card-title fw-bold">{{ course.title|truncatewords:5 }}</h6>
+                    <p class="card-text text-muted small">{{ course.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>{{ course.enrolled_count }}/{{ course.capacity }}
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>{{ course.duration_hours }}h
+                        </small>
+                    </div>
+                    {% if course.is_full %}
+                        <span class="badge bg-danger mt-2">Full</span>
+                    {% elif course.available_spots < 5 %}
+                        <span class="badge bg-warning mt-2">Few Spots Left</span>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a href="{{ course.get_absolute_url }}" class="btn btn-sm btn-primary w-100">
+                        View Course <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <p class="text-muted">No courses found. Try adjusting your filters.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

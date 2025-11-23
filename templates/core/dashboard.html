@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Skills Development Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="display-5 fw-bold mb-4">
+        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+    </h1>
+    
+    {% if worker %}
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="fas fa-book-reader fa-3x text-primary mb-3"></i>
+                    <h3 class="fw-bold">{{ enrollments|length|default:0 }}</h3>
+                    <p class="text-muted">Enrolled Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="fas fa-certificate fa-3x text-success mb-3"></i>
+                    <h3 class="fw-bold">{{ completed_courses|default:0 }}</h3>
+                    <p class="text-muted">Completed Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="fas fa-tools fa-3x text-info mb-3"></i>
+                    <h3 class="fw-bold">{{ worker.worker_skills.count|default:0 }}</h3>
+                    <p class="text-muted">Skills Acquired</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>My Recent Enrollments</h5>
+                </div>
+                <div class="card-body">
+                    {% if enrollments %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in enrollments %}
+                                    <tr>
+                                        <td>{{ enrollment.course.title }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ enrollment.get_status_display }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" style="width: {{ enrollment.progress_percentage }}%">
+                                                    {{ enrollment.progress_percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'course_detail' enrollment.course.pk %}" class="btn btn-sm btn-primary">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No enrollments yet. <a href="{% url 'course_list' %}">Browse courses</a> to get started!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle me-2"></i>No Worker Profile</h5>
+        <p>You don't have a worker profile yet. Please contact an administrator to set up your profile.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

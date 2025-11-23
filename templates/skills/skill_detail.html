@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ skill.name }} - Skills Development Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'skill_list' %}">Skills</a></li>
+                    <li class="breadcrumb-item active">{{ skill.name }}</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm mb-4">
+                {% if skill.image %}
+                    <img src="{{ skill.image.url }}" class="card-img-top" alt="{{ skill.name }}" style="max-height: 400px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <span class="badge bg-{{ skill.get_difficulty_color }} mb-2">{{ skill.get_difficulty_level_display }}</span>
+                    <h1 class="display-5 fw-bold mb-3">{{ skill.name }}</h1>
+                    <p class="lead">{{ skill.description }}</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted">Category</h6>
+                            <p><i class="{{ skill.category.icon|default:'fas fa-tag' }} me-2"></i>{{ skill.category.name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted">Estimated Duration</h6>
+                            <p><i class="fas fa-clock me-2"></i>{{ skill.estimated_duration_hours }} hours</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if related_skills %}
+            <div class="mt-4">
+                <h3 class="fw-bold mb-3">Related Skills</h3>
+                <div class="row">
+                    {% for related_skill in related_skills %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card clickable-card" onclick="window.location='{{ related_skill.get_absolute_url }}'">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold">{{ related_skill.name }}</h6>
+                                <small class="text-muted">{{ related_skill.description|truncatewords:15 }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Course Recommendations</h5>
+                    <p class="text-muted small">Browse courses related to this skill</p>
+                    <a href="{% url 'course_list' %}?skill={{ skill.id }}" class="btn btn-primary w-100">
+                        <i class="fas fa-book me-2"></i>View Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
